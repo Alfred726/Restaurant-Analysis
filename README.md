@@ -1,6 +1,8 @@
 # Restaurant Analytics Dashboard
 
-A cross-sectional analysis of **138 consumers, 130 restaurants, and 1,160 ratings** across three Mexican states (San Luis Potosí, Morelos, Tamaulipas) and four cities. Built with PostgreSQL for data modeling and Databricks for visualization.
+A cross-sectional analysis of **138 consumers, 130 restaurants, and 1.2 Average ratings** across three Mexican states (San Luis Potosí, Morelos, Tamaulipas) and four cities. Built with PostgreSQL for data modeling and Databricks for visualization.
+<img width="1245" height="152" alt="image" src="https://github.com/user-attachments/assets/8499c45d-3cf2-4d11-aa19-4fe74937da2f" />
+
 
 ## 🔍 Key Findings
 
