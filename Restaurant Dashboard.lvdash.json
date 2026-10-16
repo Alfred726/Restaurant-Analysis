@@ -1,0 +1,1249 @@
+{
+  "datasets": [
+    {
+      "name": "93f71500",
+      "displayName": "consumers",
+      "config": {
+        "version": "1.1",
+        "source": "workspace.default.consumers",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "677225e1",
+      "displayName": "ratings",
+      "config": {
+        "version": "1.1",
+        "source": "workspace.default.ratings",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "0d671edf",
+      "displayName": "restaurant_cuisines",
+      "config": {
+        "version": "1.1",
+        "source": "workspace.default.restaurant_cuisines",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "f0d084cf",
+      "displayName": "restaurants",
+      "config": {
+        "version": "1.1",
+        "source": "workspace.default.restaurants",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "c11f4309",
+      "displayName": "consumer_preferences",
+      "config": {
+        "version": "1.1",
+        "source": "workspace.default.consumer_preferences",
+        "dimensions": [
+          {
+            "expr": "source.*"
+          }
+        ],
+        "measures": [
+          {
+            "name": "count",
+            "expr": "COUNT(*)",
+            "comment": "Represents the total number of rows in the dataset. Use this measure to count all",
+            "displayName": "Count"
+          }
+        ]
+      }
+    },
+    {
+      "name": "6aa13190",
+      "displayName": "Top rated restaurants with minimum five reviews",
+      "queryLines": [
+        "--1. Which restaurants have the highest average overall rating, with at least 5 ratings?\r\n",
+        "SELECT rest.name, ROUND(AVG(r.overall_rating), 2) AS avg_rating, COUNT(*) AS num_ratings\r\n",
+        "FROM restaurants rest\r\n",
+        "JOIN ratings r\r\n",
+        "ON r.restaurant_id = rest.restaurant_id\r\n",
+        "GROUP BY rest.restaurant_id, rest.name\r\n",
+        "HAVING COUNT(*) >= 5\r\n",
+        "ORDER BY AVG(r.overall_rating) DESC\r\n",
+        "LIMIT 5;"
+      ]
+    },
+    {
+      "name": "9df17333",
+      "displayName": "Popular Cuisines",
+      "queryLines": [
+        "--2. What are the most preferred cuisines among consumers?\r\n",
+        "SELECT preferred_cuisine, COUNT(*) AS fav_cuisine\r\n",
+        "FROM consumer_preferences\r\n",
+        "GROUP BY preferred_cuisine\r\n",
+        "ORDER BY COUNT(*) DESC\r\n",
+        "LIMIT 5;"
+      ]
+    },
+    {
+      "name": "0da6bd25",
+      "displayName": "Top Rated Cuisines",
+      "queryLines": [
+        "-- 3. Which cuisines have the highest average restaurant rating?\r\n",
+        "SELECT rest.cuisine, ROUND(AVG(r.overall_rating), 2), COUNT(*) AS num_ratings\r\n",
+        "FROM restaurant_cuisines rest\r\n",
+        "JOIN ratings r\r\n",
+        "ON r.restaurant_id = rest.restaurant_id\r\n",
+        "GROUP BY rest.cuisine\r\n",
+        "ORDER BY ROUND(AVG(r.overall_rating), 2) DESC\r\n",
+        "LIMIT 10;"
+      ]
+    },
+    {
+      "name": "23798629",
+      "displayName": "High or Low Restaurant Ratings",
+      "queryLines": [
+        "-- 4. Do expensive restaurants (Price = High) get rated higher than cheap ones?\r\n",
+        "SELECT rest.price, ROUND(AVG(r.overall_rating), 2) AS avg_rating, COUNT(*) AS num_ratings\r\n",
+        "FROM restaurants rest\r\n",
+        "JOIN ratings r\r\n",
+        "ON r.restaurant_id = rest.restaurant_id\r\n",
+        "GROUP BY rest.price\r\n",
+        "ORDER BY avg_rating DESC;"
+      ]
+    },
+    {
+      "name": "19ee93c5",
+      "displayName": "Restaurant Ratings By City",
+      "queryLines": [
+        "-- 6. How does the average restaurant rating differ by city?\r\n",
+        "SELECT rest.city, ROUND(AVG(r.overall_rating), 2) AS avg_rating, COUNT(*) AS num_ratings\r\n",
+        "FROM restaurants rest\r\n",
+        "JOIN ratings r\r\n",
+        "ON r.restaurant_id = rest.restaurant_id\r\n",
+        "GROUP BY rest.city\r\n",
+        "HAVING COUNT(*) >= 5"
+      ]
+    },
+    {
+      "name": "91fc42c7",
+      "displayName": "Top Rated Restaurants by City with Minimum Reviews",
+      "queryLines": [
+        "-- 10. For each city, which restaurant has the highest average overall rating (with at least 5 ratings)?\r\n",
+        "WITH avg_rest AS(\r\n",
+        "\tSELECT rest.restaurant_id, rest.name, rest.city, ROUND(AVG(r.overall_rating), 2) AS avg_rating\r\n",
+        "\tFROM restaurants rest\r\n",
+        "\tJOIN ratings r\r\n",
+        "\tON rest.restaurant_id = r.restaurant_id\r\n",
+        "\tGROUP BY rest.restaurant_id, rest.name, rest.city\r\n",
+        "\tHAVING COUNT(*) >= 5\r\n",
+        "),\r\n",
+        "ranked AS (\r\n",
+        "\tSELECT restaurant_id, name, city, avg_rating, ROW_NUMBER() OVER (PARTITION BY city ORDER BY avg_rating DESC) AS rn\r\n",
+        "\tFROM avg_rest\r\n",
+        ")\r\n",
+        "SELECT *\r\n",
+        "FROM ranked \r\n",
+        "WHERE rn = 1;"
+      ]
+    },
+    {
+      "name": "d6fcbace",
+      "displayName": "City Wise Smoking Policy Overview",
+      "queryLines": [
+        "SELECT\r\n",
+        "    city,\r\n",
+        "    smoking_Allowed,\r\n",
+        "    COUNT(*) AS num_restaurants\r\n",
+        "FROM restaurants\r\n",
+        "WHERE smoking_allowed IN ('Yes', 'No')\r\n",
+        "GROUP BY City, smoking_allowed\r\n",
+        "ORDER BY City, smoking_allowed;"
+      ]
+    },
+    {
+      "name": "4d3eede3",
+      "displayName": "Alcohol Service and Ratings",
+      "queryLines": [
+        "SELECT rest.alcohol_service, \r\n",
+        "\tCASE\r\n",
+        "        WHEN r.overall_rating < 0.67 THEN 'Unsatisfactory'\r\n",
+        "        WHEN r.overall_rating < 1.34 THEN 'Satisfactory'\r\n",
+        "        ELSE                            'Highly Satisfactory'\r\n",
+        "    END AS rating_band,\r\n",
+        "\tCOUNT(*) AS num_ratings\r\n",
+        "FROM restaurants rest\r\n",
+        "JOIN ratings r\r\n",
+        "ON r.restaurant_id = rest.restaurant_id\r\n",
+        "GROUP BY rest.alcohol_service, rating_band\r\n",
+        "ORDER BY rest.alcohol_service;"
+      ]
+    },
+    {
+      "name": "771ca802",
+      "displayName": "Consumer Age Group Analysis by Cuisine Preference",
+      "queryLines": [
+        "WITH consumer_ages AS (\r\n",
+        "    SELECT\r\n",
+        "        CASE\r\n",
+        "            WHEN c.age BETWEEN 18 AND 25 THEN '18-25'\r\n",
+        "            WHEN c.age BETWEEN 26 AND 40 THEN '26-40'\r\n",
+        "            WHEN c.age BETWEEN 41 AND 60 THEN '41-60'\r\n",
+        "            WHEN c.age > 60               THEN '60+'\r\n",
+        "            ELSE 'Unknown'\r\n",
+        "        END AS age_bucket,\r\n",
+        "        cp.preferred_cuisine,\r\n",
+        "        COUNT(*) AS num_consumers\r\n",
+        "    FROM consumers c\r\n",
+        "    JOIN consumer_preferences cp\r\n",
+        "        ON cp.consumer_id = c.consumer_id\r\n",
+        "    WHERE c.age IS NOT NULL\r\n",
+        "    GROUP BY age_bucket, cp.preferred_cuisine\r\n",
+        "),\r\n",
+        "ranked AS (\r\n",
+        "    SELECT\r\n",
+        "        age_bucket,\r\n",
+        "        preferred_cuisine,\r\n",
+        "        num_consumers,\r\n",
+        "        ROW_NUMBER() OVER (\r\n",
+        "            PARTITION BY age_bucket\r\n",
+        "            ORDER BY num_consumers DESC\r\n",
+        "        ) AS rn\r\n",
+        "    FROM consumer_ages\r\n",
+        ")\r\n",
+        "SELECT\r\n",
+        "    age_bucket,\r\n",
+        "    preferred_cuisine,\r\n",
+        "    num_consumers,\r\n",
+        "    rn AS rank\r\n",
+        "FROM ranked\r\n",
+        "WHERE rn <= 3\r\n",
+        "ORDER BY age_bucket, rn;"
+      ]
+    }
+  ],
+  "relationshipGraphs": [
+    {
+      "sources": [
+        {
+          "name": "consumers",
+          "datasetName": "93f71500"
+        },
+        {
+          "name": "ratings",
+          "datasetName": "677225e1"
+        },
+        {
+          "name": "restaurant_cuisines",
+          "datasetName": "0d671edf"
+        },
+        {
+          "name": "restaurants",
+          "datasetName": "f0d084cf"
+        },
+        {
+          "name": "consumer_preferences",
+          "datasetName": "c11f4309"
+        },
+        {
+          "name": "Untitled_dataset",
+          "datasetName": "6aa13190"
+        },
+        {
+          "name": "Untitled_dataset_1",
+          "datasetName": "9df17333"
+        },
+        {
+          "name": "Untitled_dataset_2",
+          "datasetName": "0da6bd25"
+        },
+        {
+          "name": "Untitled_dataset_3",
+          "datasetName": "23798629"
+        },
+        {
+          "name": "Untitled_dataset_4",
+          "datasetName": "19ee93c5"
+        },
+        {
+          "name": "Untitled_dataset_5",
+          "datasetName": "91fc42c7"
+        },
+        {
+          "name": "Untitled_dataset_6",
+          "datasetName": "d6fcbace"
+        },
+        {
+          "name": "Untitled_dataset_7",
+          "datasetName": "4d3eede3"
+        },
+        {
+          "name": "Untitled_dataset_8",
+          "datasetName": "771ca802"
+        }
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "66b99e94",
+      "displayName": "Untitled page",
+      "layout": [
+        {
+          "widget": {
+            "name": "18e4c411",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "Untitled_dataset_1__fav_cuisine",
+                      "expression": "`Untitled_dataset_1`.`fav_cuisine`"
+                    },
+                    {
+                      "name": "Untitled_dataset_1__preferred_cuisine",
+                      "expression": "`Untitled_dataset_1`.`preferred_cuisine`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Most Preferred Cuisines",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Untitled_dataset_1__preferred_cuisine",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "natural-order"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "Untitled_dataset_1__fav_cuisine",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Untitled_dataset_1__fav_cuisine",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 4,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "top-rated-restaurants",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "Untitled_dataset__name",
+                      "expression": "`Untitled_dataset`.`name`"
+                    },
+                    {
+                      "name": "sum(Untitled_dataset__avg_rating)",
+                      "expression": "SUM(`Untitled_dataset`.`avg_rating`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Top 5 Rated Restaurants",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "sum(Untitled_dataset__avg_rating)",
+                  "axis": {
+                    "title": "Average Ratings"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "Untitled_dataset__name",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                },
+                "color": {
+                  "fieldName": "Untitled_dataset__name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 4,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "top-rated-cuisines",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "Untitled_dataset_2__cuisine",
+                      "expression": "`Untitled_dataset_2`.`cuisine`"
+                    },
+                    {
+                      "name": "sum(Untitled_dataset_2__round(avg(overall_rating), 2))",
+                      "expression": "SUM(`Untitled_dataset_2`.`round(avg(overall_rating), 2)`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Top Rated Cuisines",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "sum(Untitled_dataset_2__round(avg(overall_rating), 2))",
+                  "axis": {
+                    "title": "Average Ratings"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "Untitled_dataset_2__cuisine",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "color": {
+                  "fieldName": "Untitled_dataset_2__cuisine",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "natural-order"
+                    }
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 10,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "restaurant-pricing-vs-average-ratings",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "Untitled_dataset_3__price",
+                      "expression": "`Untitled_dataset_3`.`price`"
+                    },
+                    {
+                      "name": "sum(Untitled_dataset_3__avg_rating)",
+                      "expression": "SUM(`Untitled_dataset_3`.`avg_rating`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Restaurant Pricing vs Average Ratings",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "sum(Untitled_dataset_3__avg_rating)",
+                  "axis": {
+                    "title": "Average Ratings"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "Untitled_dataset_3__price",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "color": {
+                  "fieldName": "Untitled_dataset_3__price",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "custom-order",
+                      "orderedValues": [
+                        "High",
+                        "Low",
+                        "Medium"
+                      ]
+                    }
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 10,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "4807e644",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "Untitled_dataset_4__city",
+                      "expression": "`Untitled_dataset_4`.`city`"
+                    },
+                    {
+                      "name": "sum(Untitled_dataset_4__avg_rating)",
+                      "expression": "SUM(`Untitled_dataset_4`.`avg_rating`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {},
+              "version": 3,
+              "mark": {
+                "colors": [
+                  "#5B8FF9",
+                  "#5AD8A6",
+                  "#5D7092",
+                  "#F6BD16",
+                  "#E8684A",
+                  "#6DC8EC",
+                  "#9270CA",
+                  "#FF9D4D",
+                  "#269A99",
+                  "#FF99C3",
+                  "#945FB9",
+                  "#FF6B6B"
+                ]
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "sum(Untitled_dataset_4__avg_rating)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "Untitled_dataset_4__city",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "color": {
+                  "fieldName": "Untitled_dataset_4__city",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 16,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "c6bd5d22",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "Untitled_dataset_6__smoking_Allowed",
+                      "expression": "`Untitled_dataset_6`.`smoking_Allowed`"
+                    },
+                    {
+                      "name": "Untitled_dataset_6__num_restaurants",
+                      "expression": "`Untitled_dataset_6`.`num_restaurants`"
+                    },
+                    {
+                      "name": "Untitled_dataset_6__city",
+                      "expression": "`Untitled_dataset_6`.`city`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Smoking Policy by City (%)",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "mark": {
+                "layout": "percent-stack"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Untitled_dataset_6__num_restaurants",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "Untitled_dataset_6__city",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "color": {
+                  "fieldName": "Untitled_dataset_6__smoking_Allowed",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 16,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "b39eb5e1",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "Untitled_dataset_7__rating_band",
+                      "expression": "`Untitled_dataset_7`.`rating_band`"
+                    },
+                    {
+                      "name": "Untitled_dataset_7__alcohol_service",
+                      "expression": "`Untitled_dataset_7`.`alcohol_service`"
+                    },
+                    {
+                      "name": "Untitled_dataset_7__num_ratings",
+                      "expression": "`Untitled_dataset_7`.`num_ratings`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Alcohol Service by Rating Band",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "mark": {
+                "layout": "group"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Untitled_dataset_7__alcohol_service",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "Untitled_dataset_7__num_ratings",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Untitled_dataset_7__rating_band",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 22,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "30f94e0b",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "Untitled_dataset_8__preferred_cuisine",
+                      "expression": "`Untitled_dataset_8`.`preferred_cuisine`"
+                    },
+                    {
+                      "name": "Untitled_dataset_8__age_bucket",
+                      "expression": "`Untitled_dataset_8`.`age_bucket`"
+                    },
+                    {
+                      "name": "sum(Untitled_dataset_8__num_consumers)",
+                      "expression": "SUM(`Untitled_dataset_8`.`num_consumers`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "mark": {
+                "layout": "group"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Untitled_dataset_8__age_bucket",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(Untitled_dataset_8__num_consumers)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Untitled_dataset_8__preferred_cuisine",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 22,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "959724a0",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# <span style=\"text-align:center;display:block\"><span style=\"font-size:24px\">**Restaurant Analytics Dashboard**</span></span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "customer-number",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "measure(consumers__count)",
+                      "expression": "MEASURE(`consumers`.`count`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "<span style=\"text-align:center;display:block;\">Total Consumers</span>",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(consumers__count)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "restaurant-number",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "measure(restaurants__count)",
+                      "expression": "MEASURE(`restaurants`.`count`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "<span style=\"text-align:center;display:block;\">Total Restaurants</span>",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(restaurants__count)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 2,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "overall-average-rating",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "avg(ratings__overall_rating)",
+                      "expression": "AVG(`ratings`.`overall_rating`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "<span style=\"text-align:center;display:block;\">Average Rating</span>",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "avg(ratings__overall_rating)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 2,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "03818e76",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "countdistinct(consumers__state)",
+                      "expression": "COUNT(DISTINCT `consumers`.`state`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "<span style=\"text-align:center;display:block\">Total States</span>",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "countdistinct(consumers__state)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "51c56624",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "countdistinct(consumers__city)",
+                      "expression": "COUNT(DISTINCT `consumers`.`city`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "<span style=\"text-align:center;display:block\">Total Cities</span>",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "countdistinct(consumers__city)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 2,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "10838510",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "fields": [
+                    {
+                      "name": "countdistinct(restaurants__country)",
+                      "expression": "COUNT(DISTINCT `restaurants`.`country`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "<span style=\"text-align:center;display:block\">Total Countries</span>",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "countdistinct(restaurants__country)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 10,
+            "y": 2,
+            "width": 2,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "canvasBackgroundColor": {
+        "light": "#FAFAFB",
+        "dark": "#1F272D"
+      },
+      "widgetBackgroundColor": {
+        "light": "#FFFFFF",
+        "dark": "#11171C"
+      },
+      "fontColor": {
+        "light": "#11171C",
+        "dark": "#E8ECF0"
+      },
+      "selectionColor": {
+        "light": "#2272B4",
+        "dark": "#8ACAFF"
+      },
+      "visualizationColors": [
+        "#077A9D",
+        "#FFAB00",
+        "#00A972",
+        "#FF3621",
+        "#8BCAE7",
+        "#AB4057",
+        "#99DDB4",
+        "#FCA4A1",
+        "#919191",
+        "#BF7080",
+        "#077A9D",
+        "#FFAB00"
+      ],
+      "widgetHeaderAlignment": "LEFT",
+      "continuousGradient": {
+        "lightMode": {
+          "fromCategoricalIndex": 0
+        },
+        "darkMode": {
+          "fromCategoricalIndex": 0
+        }
+      },
+      "visualizationColorMappings": [
+        {
+          "value": "",
+          "color": "#077A9D"
+        }
+      ]
+    },
+    "applyModeEnabled": false
+  }
+}
