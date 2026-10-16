@@ -1,4 +1,30 @@
+# Restaurant Analytics Dashboard
+
+A cross-sectional analysis of **138 consumers, 130 restaurants, and 1,160 ratings** across three Mexican states (San Luis Potosí, Morelos, Tamaulipas) and four cities. Built with PostgreSQL for data modeling and Databricks for visualization.
+
 ## 🔍 Key Findings
+
+This project explores restaurant ratings, consumer preferences, and the factors that influence dining satisfaction. The analysis combines five relational tables — consumers, restaurants, ratings, consumer preferences, and restaurant cuisines — to answer questions about pricing, location, cuisine, alcohol service, smoking policy, and consumer demographics.
+
+**Tools used:**
+- **Databricks (Free Edition)** — data ingestion, SQL analysis, dashboarding
+- **Git/GitHub** — version control and project hosting
+
+**Dataset scope:**
+| Metric | Value |
+|---|---|
+| Total consumers | 138 |
+| Total restaurants | 130 |
+| Total ratings | 1.16 |
+| Total states | 3 |
+| Total cities | 4 |
+| Total countries | 1 (Mexico) |
+| Average overall rating | 1.2 / 2.0 |
+
+---
+
+## 🗂️ Repository Structure
+<img width="1030" height="452" alt="image" src="https://github.com/user-attachments/assets/49669d91-d715-4ea1-ab52-e608da4f6c35" />
 
 ### 1. Ratings Are Uniformly Low
 Across all 1,160 ratings in the dataset, the average overall rating is just 1.2 out of 2.0, a middling score that suggests most consumers found their dining experiences merely adequate. Even the top-rated restaurants, once filtered to those with at least five ratings, peak at an average of 2.0, and only a small handful of establishments such as Emilianos, Michiko Restaurant Japones, and Restaurant Las Mañanitas manage to sustain that level. The rest of the top five, including Cafe Punta Del Cielo and La Estrella De Dimas, sit just below at 1.83 and 1.80 respectively.
@@ -40,3 +66,59 @@ Across every age bucket, Mexican cuisine dominates preferences. Consumers aged 1
 
 <img width="611" height="440" alt="Age Group Cuisine Preference" src="https://github.com/user-attachments/assets/ea149bce-4f54-4d67-b459-6430d54b05b0" />
 
+## 🛠️ Methodology
+
+### Data Modeling
+- Five tables imported into PostgreSQL with properly defined **primary keys** (single-column and composite) and **foreign keys** enforcing referential integrity.
+- Composite primary keys applied to `consumer_preferences`, `restaurant_cuisines`, and `ratings` to reflect natural uniqueness constraints.
+- Duplicate rows cleaned before key creation.
+
+### Analysis Approach
+- Queries written in **Databricks SQL** using joins, aggregations, CTEs, window functions (`ROW_NUMBER`, `RANK`), and `FILTER` clauses.
+- Dashboard built in **Databricks AI/BI Dashboards**, using SQL datasets to drive each visualization.
+
+### Limitations
+- **No temporal data** — the dataset is a cross-sectional snapshot, so trends over time cannot be analyzed.
+- **Geographic concentration** — all consumers and restaurants are in Mexico, limiting generalizability.
+- **Small sample in some groups** — e.g., the 60+ age bucket and Jiutepec city.
+- **Suspicious values** — some consumer ages (e.g., 82) and rating patterns suggest possible data-entry issues in the source.
+
+## 📈 Dashboard Preview
+
+![Restaurant Analytics Dashboard](images/dashboard_preview.png)
+
+The dashboard includes:
+- **KPI cards** — total consumers, restaurants, average rating, geographic coverage
+- **Top-rated restaurants** — top 5 with minimum rating thresholds
+- **Most preferred cuisines** — consumer preference distribution
+- **Top-rated cuisines** — restaurant quality by cuisine type
+- **Price vs. rating** — relationship between pricing tier and average rating
+- **City ratings** — average rating per city
+- **Smoking policy by city** — percentage breakdown
+- **Alcohol service vs. rating band** — grouped bar chart
+- **Age group cuisine preferences** — top cuisines per age bucket
+
+---
+
+## 🚀 How to Reproduce
+
+1. **Clone the repo:**
+   ```bash
+   git clone https://github.com/your-username/restaurant-analytics-project.git
+   ```
+2. **Set up PostgreSQL:** Import the five CSV files into a `restaurant` database using `\copy` or pgAdmin.
+3. **Create keys:** Run the primary and foreign key scripts in `sql/`.
+4. **Run the analysis:** Execute the queries in `sql/analysis.sql`.
+5. **Open the dashboard:** Import `Restaurant Dashboard.lvdash.json` into a Databricks workspace (AI/BI Dashboards → Import).
+
+---
+
+## 📝 Author
+
+**Alfred** — Data analyst in training. This project demonstrates end-to-end skills in relational data modeling, SQL analysis, and business intelligence dashboarding.
+
+---
+
+## 📄 License
+
+This project is open for educational and portfolio use. The dataset is fictional and used here for demonstration purposes.
